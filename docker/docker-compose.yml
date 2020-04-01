@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:12.2
+    ports:
+      - 54321:5432
+    env_file:
+      - .env
+    volumes:
+      - ../.docker-local-data/pgdata:/pgdata
+
+  web:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    command: "/docker/app-entrypoint.sh"
+    env_file:
+      - .env
+    volumes:
+      - ../app:/app
+      - ../docker/app-entrypoint.sh:/docker/app-entrypoint.sh
+      - ../.docker-local-data/www/media:/www/media
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
